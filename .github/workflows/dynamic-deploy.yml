@@ -1,0 +1,46 @@
+name: Dynamic Deployment Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment'
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version or tag to deploy'
+        required: true
+        default: v1.0.0
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display Deployment Info
+        run: |
+          echo "🌍 Deploying to environment: ${{ github.event.inputs.environment }}"
+          echo "🏷 Version: ${{ github.event.inputs.version }}"
+
+      - name: Conditional Deployment
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "staging" ]]; then
+            echo "🚀 Running staging deployment..."
+            # Add staging commands here
+          elif [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+            echo "🚀 Running production deployment..."
+            # Add production commands here
+          else
+            echo "❌ Unknown environment"
+            exit 1
+          fi
+
+      - name: Post Deployment Status
+        run: echo "✅ Deployment workflow completed successfully!"
